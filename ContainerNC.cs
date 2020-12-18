@@ -50,10 +50,18 @@ namespace NC
         {
 
             this.First = first_;
-            if (First !=null) rateFirst();
+            if (First != null) 
+            { 
+                rateFirst();
+                First.parent = this;
+            }
 
             this.Second = second_;
-            if (Second != null) rateSecond(); 
+            if (Second != null) 
+            { 
+                rateSecond();
+                Second.parent = this;
+            }
             
         }
 
@@ -134,27 +142,102 @@ namespace NC
         }
         protected override int getDisplayHeight()
         {
-            if(First==null && Second==null)
-                return base.getDisplayHeight();
-            int h = Height - 2;
-            if (First != null) h -= First.Height+1;
-            if (Second != null) h -= Second.Height + 1;
-            return h;
+            if (First != null && Second != null)
+                return 0;
+            if (First==null && Second==null || exis == Exis.Vertical)
+                return base.getDisplayHeight();            
+            else
+            {
+                int h = Height;
+                if (First != null) h -= First.Height + 1;
+                if (Second != null) h -= Second.Height + 1;
+                return h;
+            }  
         }
         protected override int getDisplayWidth()
         {
-            if(First == null && Second == null) 
-                base.setWindowsWidth();
-            int w = Width - 2;
-            if (First != null) w -= First.Width + 1;
-            if (Second != null) w -= Second.Width + 1;
-            return w;
+            if (First != null && Second != null)
+                return 0;
+            if (First == null && Second == null || exis == Exis.Horizontal) 
+               return base.getDisplayWidth();
+            else
+            {
+                int w = Width;
+                if (First != null) w -= First.Width + 1;
+                if (Second != null) w -= Second.Width + 1;
+                return w;
+            }
+                       
         }
         public override void Update()
         {
             base.Update();
             rateFirst();
             rateSecond();
+        }
+        protected ControlNC getActiveControl()
+        {
+            if (First != null && First.isActive)
+                return First;
+            if (Second != null && Second.isActive)
+                return Second;
+            return null;
+        }
+        public override void takeFocus()
+        {
+            isActive = true;
+            if(First!=null && First.Height>0 && Second.Width>0)
+                First.takeFocus();
+            else
+            {
+                if (Second != null && Second.Height > 0 && Second.Width > 0)
+                    Second.takeFocus();
+            }
+        }
+        public override void loseFocus()
+        {
+            base.loseFocus();
+            if (getActiveControl() != null)
+            {
+                getActiveControl().isActive = false;
+            }
+
+        }
+        public override void keyPress(ConsoleKey key)
+        {
+            switch (key)
+            {
+                case ConsoleKey.Tab:
+                    transferFocus();
+                    break;
+                default:
+                    if (getActiveControl() != null)
+                        getActiveControl().keyPress(key);
+                    break;
+            }
+        }
+        private void transferFocus()
+        {
+            if (First != null && First.isActive)
+            {
+                if (Second != null) 
+                {
+                    Second.takeFocus();
+                    First.loseFocus();
+                }
+                return;
+                
+            }
+            if(Second!=null && Second.isActive)
+            {
+                if (First != null)
+                {
+                    First.takeFocus();
+                    Second.loseFocus();
+                }
+            }
+                
+
         }
     }
 }

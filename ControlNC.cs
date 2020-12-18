@@ -10,8 +10,8 @@ namespace NC
     {
         protected int WindowsHeight;
         protected int WindowsWidth;
-        protected int beginCursorPosX { get; }
-        protected int beginCursorPosY { get;  }
+        protected int beginCursorPosX { get; set; }
+        protected int beginCursorPosY { get; set; }
 
         public int Top { 
             get
@@ -114,8 +114,8 @@ namespace NC
             setWindowsWidth();
             Height = height_;
             Width = width_;
-            beginCursorPosX = Left + 1;
-            beginCursorPosY = Top + 1;
+            beginCursorPosX = Left;
+            beginCursorPosY = Top;
             Top = top_;
             Left = left_;
         }
@@ -131,7 +131,7 @@ namespace NC
         {
             this.isActive = false;
         }
-       // public abstract void HandleEvent(ConsoleKey key);
+        public abstract void keyPress(ConsoleKey key);
         public virtual void Update()
         {
             setWindowsHeight();
@@ -160,11 +160,11 @@ namespace NC
 
         protected virtual int getDisplayHeight()
         {
-            return Height- 2;           
+            return Height;           
         }
         protected virtual int getDisplayWidth()
         {
-            return Width - 2;           
+            return Width;           
         }
     }
 }

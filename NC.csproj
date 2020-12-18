@@ -43,11 +43,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Border.cs" />
     <Compile Include="ContainerNC.cs" />
     <Compile Include="ControlNC.cs" />
     <Compile Include="FileExplorer.cs" />
+    <Compile Include="FormNC.cs" />
+    <Compile Include="MainMenu.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="MyWindow.cs" />
+    <Compile Include="Panel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
