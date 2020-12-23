@@ -75,9 +75,57 @@ namespace NC
             }
         }
 
-        public static int GorizontallMenu(string[] elements)
+        public static int GorizontallMenu(string[] elements, int widthItem)
         {
-            return 0;
+            ConsoleColor bg = Console.BackgroundColor;
+            ConsoleColor fg = Console.ForegroundColor;
+            int x = Console.CursorLeft;
+            int y = Console.CursorTop;
+            Console.CursorVisible = false;
+            int pos = 0; int dx = 0;
+            while (true)
+            {
+                for (int i = 0; i < elements.Length; i++)
+                {
+                    Console.SetCursorPosition(x +dx, y);
+                    if (i == pos)
+                    {
+                        Console.BackgroundColor = fg;
+                        Console.ForegroundColor = bg;
+                    }
+                    else
+                    {
+                        Console.BackgroundColor = bg;
+                        Console.ForegroundColor = fg;
+                    }
+                    Console.Write(elements[i].PadRight(widthItem));
+                }
+
+                ConsoleKey consoleKey = Console.ReadKey().Key;
+                switch (consoleKey)
+                {
+
+                    case ConsoleKey.Enter:
+
+                        //Console.CursorVisible = true;
+                        return pos;                    
+
+                    case ConsoleKey.LeftArrow:
+                        if (pos > 0)
+                            pos--;
+                        break;
+
+                    case ConsoleKey.RightArrow:
+                        if (pos < elements.Length - 1)
+                            pos++;
+                        break;
+
+                    default:
+                        break;
+                }
+
+
+            }
         }
     }
 }

@@ -114,7 +114,7 @@ namespace NC
 
         }
 
-        public ResourseInfo[] GetResourseEntries(string path, bool withAttributes)
+        public ResourseInfo[] GetResourseEntries(string path)
         {
             List<ResourseInfo> rList = new List<ResourseInfo>();           
 
@@ -147,5 +147,6 @@ namespace NC
             }
             return rList.ToArray();
         }
+        
     }
 }

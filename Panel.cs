@@ -8,49 +8,33 @@ namespace NC
 {
     public class Panel: ControlNC
     {
-        public ConsoleColor baseColor { get; set; }
-        public ConsoleColor activeColor { get; set; }
-        public ConsoleColor textColor { get; set; }
-        public ConsoleColor inactiveColor { get; set; }
-        public ConsoleColor selectedColor { get; set; }
+        public ConsoleColor baseColor { get; set; } = ConsoleColor.Blue;
+        public ConsoleColor activeColor { get; set; } = ConsoleColor.White;
+        public ConsoleColor textColor { get; set; } = ConsoleColor.Black;
+        public ConsoleColor inactiveColor { get; set; } = ConsoleColor.Gray;
+        public ConsoleColor selectedColor { get; set; } = ConsoleColor.Cyan;
 
         public int cursorPosX { get; set; }
         public int cursorPosY { get; set; }
         public bool cursorVisible { get; set; }
-        public bool hasBorder
-        {
-            get
-            {
-                return hasBorder;
-            }
-            set
-            {
-                hasBorder = value;
-                if (value)
-                {
-                    Border.Drow(Left, Top, Width, Height);
-                    printCaption();
-                }
-                    
+        public bool hasBorder { get; set; }
 
-            }
-        }
         public string caption { get; set; }
-        
+        public string textContent { get; set; }
 
-        public Panel(int height_, int width_, int top_, int left_, ConsoleColor baseColor_, ConsoleColor activeColor_, ConsoleColor textColor_, bool cursorVisible_ )
+
+        public Panel(int height_, int width_, int top_, int left_, string caption_, string content_,bool cursorVisible_ )
             :base(height_, width_, top_, left_)
         {
-            this.baseColor = baseColor_;
-            this.activeColor = activeColor_;
-            this.textColor = textColor_;  
+            this.caption = caption_;
+            this.textContent = content_;
             cursorVisible = cursorVisible_;
             Console.CursorVisible = cursorVisible;
             cursorPosX = beginCursorPosX;
             cursorPosY = beginCursorPosY;
         }
-        public Panel(int height_, int width_, int top_, int left_): this(height_, width_, top_, left_, ConsoleColor.Blue, ConsoleColor.White, ConsoleColor.DarkBlue, false) { }
-        public Panel():this(Console.WindowHeight, Console.WindowWidth, 0, 0, ConsoleColor.Blue, ConsoleColor.White, ConsoleColor.DarkBlue, false) { }
+        public Panel(int height_, int width_, int top_, int left_): this(height_, width_, top_, left_,"","", false) { }
+        public Panel():this(Console.WindowHeight, Console.WindowWidth, 0,0,"","", false) { }
 
         public void printCaption()
         {
@@ -84,7 +68,7 @@ namespace NC
                 Console.Write('\n');
             }
         }
-        public void drawContent(string text, int maxWeidth/*, bool wordWrap*/)
+        public virtual void drawContent(string text, int maxWeidth/*, bool wordWrap*/)
         {
             Console.ForegroundColor = textColor;
             Console.SetCursorPosition(cursorPosX, cursorPosY);
@@ -150,6 +134,17 @@ namespace NC
             //    Console.WriteLine(text);
             //}
 
+        }
+
+        public virtual void draw()
+        {
+            drawBackGround();
+            if (hasBorder)
+            {
+                Border.Drow(Left, Top, Width, Height);
+            }
+            printCaption();
+            drawContent(textContent,getDisplayWidth());
         }
                
 
