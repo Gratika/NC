@@ -8,5 +8,10 @@ namespace NC
         {
             throw new NotImplementedException();
         }
+
+        public override void show()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

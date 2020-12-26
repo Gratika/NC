@@ -46,6 +46,7 @@
     <Compile Include="Border.cs" />
     <Compile Include="ContainerNC.cs" />
     <Compile Include="ControlNC.cs" />
+    <Compile Include="DialogWindows.cs" />
     <Compile Include="FileExplorer.cs" />
     <Compile Include="FormNC.cs" />
     <Compile Include="ListBox.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="Panel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WindowsNC.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

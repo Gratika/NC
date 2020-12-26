@@ -72,10 +72,12 @@ namespace NC
             
         }
 
-        public void deleteDirectory(string dirPath)
+        public void delete(string soursePath)
         {
-            DirectoryInfo dirInfo = new DirectoryInfo(dirPath);
-            dirInfo.Delete(true);
+            if (Directory.Exists(soursePath))
+                Directory.Delete(soursePath, true);
+            if (File.Exists(soursePath))
+                File.Delete(soursePath);
 
         }
 
@@ -103,10 +105,7 @@ namespace NC
 
             }
         }
-        public void deleteFile(string filePath)
-        {
-            File.Delete(filePath);
-        }
+       
         public void moveFile(string filePath, string targetFile)
         {
             FileInfo fInso = new FileInfo(filePath);

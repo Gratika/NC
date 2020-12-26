@@ -10,100 +10,17 @@ namespace NC
     {
         protected int WindowsHeight;
         protected int WindowsWidth;
-        protected int beginCursorPosX { get; set; }
-        protected int beginCursorPosY { get; set; }
+        public int beginCursorPosX { get; set; }
+        public int beginCursorPosY { get; set; }
 
-        public int Top { 
-            get
-            {
-                return Top;
-            }
-            set
-            {
-                if (parent != null)
-                {
-                    if (value > parent.Height || value < parent.beginCursorPosY)
-                        Left = parent.beginCursorPosY;
-                    else Left = value;
-                }
-                else
-                {
-                    if (value > Console.WindowHeight || value < 0)
-                        Top = 0;
-                    else Top = value;
-                }
-                
-            }
-        }
+        public int Top { get; set; }        
 
-        public int Left
-        {
-            get
-            {
-                return Left;
-            }
-            set
-            {
-                if (parent != null)
-                {
-                    if (value > parent.Width || value < parent.beginCursorPosX)
-                        Left = parent.beginCursorPosX;
-                    else Left = value;
-                }
-                else
-                {
-                    if (value > Console.WindowWidth || value < 0)
-                        Left = 0;
-                    else Left = value;
-                }
-                
-            }
-        }
-        public int Height
-        {
-            get
-            {
-                return Height;
-            }
-            set
-            {
-                if (parent != null)
-                {
-                    if (value > getDisplayHeight())
-                        Height = getDisplayHeight();
-                    else Height = value;
-                }
-                else
-                {
-                    if (value > Console.WindowHeight)
-                        Height = Console.WindowHeight;
-                    else Height = value;
-                }
-                
-            }
-        }
-        public int Width {
-            get
-            {
-                return Width;
-            }
-            set
-            {
-                if (parent != null)
-                {
-                    if (value > getDisplayWidth())
-                        Width = getDisplayWidth();
-                    else Width = value;
-                }
-                else
-                {
-                    if (value > Console.WindowWidth)
-                        Width = Console.WindowWidth;
-                    else Width = value;
-                }
-                
-            }
-        }
+        public int Left { get; set; }
+       
+        public int Height { get; set; }
+        
+        public int Width { get; set; }
+        
 
         public ContainerNC parent { get; set;} 
         public bool isActive { get; set; } = false;
@@ -114,10 +31,11 @@ namespace NC
             setWindowsWidth();
             Height = height_;
             Width = width_;
-            beginCursorPosX = Left;
-            beginCursorPosY = Top;
             Top = top_;
             Left = left_;
+            beginCursorPosX = Left;
+            beginCursorPosY = Top;
+           
         }
         public ControlNC(int height_, int width_):this(height_, width_, 0, 0) { }
         public ControlNC() : this(Console.WindowHeight, Console.WindowWidth, 0, 0) { }
@@ -126,20 +44,28 @@ namespace NC
         {
             this.isActive= true;
             Console.SetCursorPosition(beginCursorPosX, beginCursorPosY);
+            show();
         }
         public virtual void loseFocus()
         {
             this.isActive = false;
+            show();
         }
         public abstract void keyPress(ConsoleKey key);
+        public abstract void show();
         public virtual void Update()
         {
             setWindowsHeight();
             setWindowsWidth();
-            if (Height > WindowsHeight)
+            if (Height != WindowsHeight)
                 Height = WindowsHeight;
-            if (Width > WindowsWidth)
+            if (Width != WindowsWidth)
                 Width = WindowsWidth;
+            Top = 0;
+            Left = 0;
+            beginCursorPosX = Left;
+            beginCursorPosY = Top;
+            // show();
         }
 
         protected virtual void setWindowsHeight()

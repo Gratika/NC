@@ -14,23 +14,23 @@ namespace NC
         /// 1 - всю доступную область контейнера занимает контрол Second;
         /// промежуточное значение указывает на промежуточный размер ;
         /// </summary>
-        public double ratio
-        {
-            get
-            {
-                return ratio;
-            }
-            set
-            {
-                if (value < 0) ratio = 0;
-                else
-                {
-                    if (value > 1) ratio = 1;
-                    else ratio = value;
-                }
+        public double ratio { get; set; }
+        //{
+        //    get
+        //    {
+        //        return ratio;
+        //    }
+        //    set
+        //    {
+        //        if (value < 0) ratio = 0;
+        //        else
+        //        {
+        //            if (value > 1) ratio = 1;
+        //            else ratio = value;
+        //        }
 
-            }
-        }
+        //    }
+        //}
 
         public ContainerNC(int height_, int width_, int top_, int left_, Exis exis_, double ratio_) : base(height_, width_, top_, left_)
         {
@@ -54,6 +54,7 @@ namespace NC
             { 
                 rateFirst();
                 First.parent = this;
+                First.isActive = true;
             }
 
             this.Second = second_;
@@ -61,6 +62,7 @@ namespace NC
             { 
                 rateSecond();
                 Second.parent = this;
+                if (First == null) Second.isActive = true;
             }
             
         }
@@ -118,6 +120,8 @@ namespace NC
             {
                 if (ratio == 1)
                 {
+                    Second.Left = Left;
+                    Second.Top = Top;
                     Second.Height = getDisplayHeight();
                     Second.Width = getDisplayWidth();
                 }
@@ -125,55 +129,30 @@ namespace NC
                 {
                     if (exis == Exis.Horizontal)
                     {
-                        Second.Top = beginCursorPosX + First.Height + 2;
+                        Second.Top = beginCursorPosX + First.Height;
                         Second.Left = beginCursorPosY;
                         Second.Width = getDisplayWidth();
-                        Second.Height = getDisplayHeight() - First.Height - 2;
+                        Second.Height = getDisplayHeight() - First.Height;
                     }
                     else
                     {
                         Second.Top = beginCursorPosX;
-                        Second.Left = beginCursorPosY + First.Width + 2;
-                        Second.Width = getDisplayWidth() - First.Width - 2;
+                        Second.Left = beginCursorPosY + First.Width;
+                        Second.Width = getDisplayWidth() - First.Width;
                         Second.Height = getDisplayHeight();
                     }
+                    Second.beginCursorPosX = Second.Left+1;
+                    Second.beginCursorPosY = Second.Top+1;
                 }
             }
         }
-        protected override int getDisplayHeight()
-        {
-            if (First != null && Second != null)
-                return 0;
-            if (First==null && Second==null || exis == Exis.Vertical)
-                return base.getDisplayHeight();            
-            else
-            {
-                int h = Height;
-                if (First != null) h -= First.Height + 1;
-                if (Second != null) h -= Second.Height + 1;
-                return h;
-            }  
-        }
-        protected override int getDisplayWidth()
-        {
-            if (First != null && Second != null)
-                return 0;
-            if (First == null && Second == null || exis == Exis.Horizontal) 
-               return base.getDisplayWidth();
-            else
-            {
-                int w = Width;
-                if (First != null) w -= First.Width + 1;
-                if (Second != null) w -= Second.Width + 1;
-                return w;
-            }
-                       
-        }
+       
+       
         public override void Update()
         {
             base.Update();
-            rateFirst();
-            rateSecond();
+            if(First!=null) rateFirst();
+            if(Second !=null) rateSecond();
         }
         protected ControlNC getActiveControl()
         {
@@ -238,6 +217,12 @@ namespace NC
             }
                 
 
+        }
+
+        public override void show()
+        {
+            First.show();
+            Second.show();
         }
     }
 }
