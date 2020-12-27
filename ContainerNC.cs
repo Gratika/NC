@@ -14,23 +14,7 @@ namespace NC
         /// 1 - всю доступную область контейнера занимает контрол Second;
         /// промежуточное значение указывает на промежуточный размер ;
         /// </summary>
-        public double ratio { get; set; }
-        //{
-        //    get
-        //    {
-        //        return ratio;
-        //    }
-        //    set
-        //    {
-        //        if (value < 0) ratio = 0;
-        //        else
-        //        {
-        //            if (value > 1) ratio = 1;
-        //            else ratio = value;
-        //        }
-
-        //    }
-        //}
+        public double ratio { get; set; }        
 
         public ContainerNC(int height_, int width_, int top_, int left_, Exis exis_, double ratio_) : base(height_, width_, top_, left_)
         {
@@ -153,6 +137,14 @@ namespace NC
             base.Update();
             if(First!=null) rateFirst();
             if(Second !=null) rateSecond();
+        }
+        public ControlNC getInactiveControl()
+        {
+            if (First != null && !First.isActive)
+                return First;
+            if (Second != null && !Second.isActive)
+                return Second;
+            return null;
         }
         protected ControlNC getActiveControl()
         {

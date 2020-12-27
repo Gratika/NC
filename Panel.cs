@@ -36,9 +36,9 @@ namespace NC
             cursorPosY = beginCursorPosY;
             Console.BackgroundColor = baseColor;
         }
-        public Panel(int height_, int width_, int top_, int left_) : this(height_, width_, top_, left_, "", "", true) { }
+        public Panel(int height_, int width_, int top_, int left_) : this(height_, width_, top_, left_, "", "", false) { }
         public Panel(string caption_, string content_, bool cursorVisible_) : this(Console.WindowHeight, Console.WindowWidth, 0, 0, caption_, content_, cursorVisible_) { }
-        public Panel() : this(Console.WindowHeight, Console.WindowWidth, 0, 0, "", "", true) { }
+        public Panel() : this(Console.WindowHeight, Console.WindowWidth, 0, 0, "", "", false) { }
 
         public void printCaption()
         {
@@ -48,11 +48,11 @@ namespace NC
                 Console.BackgroundColor = baseColor;
                 int len = caption.Length;
                 cursorPosY = Top;
-                if (len >= Width - 2)
+                if (len >= Width - 4)
                 {
-                    cursorPosX = Left;
+                    cursorPosX = Left+2;
                     Console.SetCursorPosition(cursorPosX, cursorPosY);
-                    Console.Write(caption.Substring(0, Width - 2));
+                    Console.Write(caption.Substring(0, Width - 6)+"..");
                 }
                 else
                 {
@@ -109,11 +109,7 @@ namespace NC
         }
 
 
-        //public override void Update()
-        //{
-        //    base.Update();
-        //    show();
-        //}
+        
         protected override int getDisplayHeight()
         {
             return Height - 2;

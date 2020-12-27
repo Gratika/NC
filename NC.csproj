@@ -50,7 +50,6 @@
     <Compile Include="FileExplorer.cs" />
     <Compile Include="FormNC.cs" />
     <Compile Include="ListBox.cs" />
-    <Compile Include="MainMenu.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="MyWindow.cs" />
     <Compile Include="Panel.cs" />

@@ -35,41 +35,53 @@ namespace NC
             sourseInfo.CreateSubdirectory(newDirName);
         }
 
-        public void CopyDirectory( string soursePath, string targetPath)
+        public void Copy( string soursePath, string targetPath)
         {
             DirectoryInfo targetInfo = new DirectoryInfo(targetPath);
             if (!targetInfo.Exists) targetInfo.Create(); //если папка назначения не существует, создаем ее
-            DirectoryInfo sourseInfo = new DirectoryInfo(soursePath);
-            if (sourseInfo.Exists) //если источник (папка, которую копируем) существует
+            if (File.Exists(soursePath))
             {
-                targetInfo.CreateSubdirectory(sourseInfo.Name); //создаем в папке назначения подкаталог с соответствующим именем
-                FileInfo[] files = sourseInfo.GetFiles(); //проверяем, содержатся ли в папке-источнике файли
-                if (files.Length > 0)
+                string newNameFile = Path.Combine(targetPath, Path.GetFileName(soursePath));
+                File.Copy(soursePath, newNameFile);
+            }
+            if (Directory.Exists(soursePath))
+            {
+                DirectoryInfo sourseInfo = new DirectoryInfo(soursePath);
+                if (sourseInfo.Exists) //если источник (папка, которую копируем) существует
                 {
-                    foreach(FileInfo item in files) //если да, то копируем их
+                    targetInfo.CreateSubdirectory(sourseInfo.Name); //создаем в папке назначения подкаталог с соответствующим именем
+                    FileInfo[] files = sourseInfo.GetFiles(); //проверяем, содержатся ли в папке-источнике файли
+                    if (files.Length > 0)
                     {
-                        item.CopyTo(Path.Combine(targetInfo.FullName, item.Name), true);
+                        foreach (FileInfo item in files) //если да, то копируем их
+                        {
+                            item.CopyTo(Path.Combine(targetInfo.FullName, item.Name), true);
+                        }
                     }
-                }
-                DirectoryInfo[] dir = sourseInfo.GetDirectories(); //проверяем, содержатся ли в папке-источнике подкаталоги
-                if (dir.Length > 0)
-                {
-                    foreach (DirectoryInfo item in dir)//если да, то вызаваем для них рекурсивно копирование содержимого
+                    DirectoryInfo[] dir = sourseInfo.GetDirectories(); //проверяем, содержатся ли в папке-источнике подкаталоги
+                    if (dir.Length > 0)
                     {
-                        CopyDirectory(item.FullName, Path.Combine(targetPath, sourseInfo.Name));
+                        foreach (DirectoryInfo item in dir)//если да, то вызаваем для них рекурсивно копирование содержимого
+                        {
+                            Copy(item.FullName, Path.Combine(targetPath, sourseInfo.Name));
+                        }
                     }
                 }
             }
+           
         }
 
-        public void moveDirectory(string soursePath, string targetPath)
+        public void Move(string soursePath, string targetPath)
         {
-            DirectoryInfo sourseInfo = new DirectoryInfo(soursePath);
-            if (!sourseInfo.Exists && Directory.Exists(targetPath) == false)
+            if (File.Exists(soursePath))
             {
-                sourseInfo.MoveTo(targetPath);
+                string newFileName = Path.Combine(targetPath, Path.GetFileName(soursePath));
+                File.Move(soursePath, newFileName);
             }
-            
+            if (Directory.Exists(soursePath))
+            {
+                Directory.Move(soursePath, targetPath);
+            }           
         }
 
         public void delete(string soursePath)
@@ -106,12 +118,7 @@ namespace NC
             }
         }
        
-        public void moveFile(string filePath, string targetFile)
-        {
-            FileInfo fInso = new FileInfo(filePath);
-            fInso.MoveTo(targetFile);
-
-        }
+        
 
         public ResourseInfo[] GetResourseEntries(string path)
         {
@@ -145,6 +152,11 @@ namespace NC
                rList.Add(tmp);
             }
             return rList.ToArray();
+        }
+
+        public string[] GetDrivers()
+        {
+            return Directory.GetLogicalDrives();
         }
         
     }

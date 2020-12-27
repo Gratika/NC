@@ -64,14 +64,13 @@ namespace NC
             Top = 0;
             Left = 0;
             beginCursorPosX = Left;
-            beginCursorPosY = Top;
-            // show();
+            beginCursorPosY = Top;            
         }
 
         protected virtual void setWindowsHeight()
         {
             if (this.parent == null)
-                this.WindowsHeight = Console.WindowHeight;
+                this.WindowsHeight = Console.WindowHeight-3;
             else
                 this.WindowsHeight = parent.getDisplayHeight();
         }

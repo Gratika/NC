@@ -24,40 +24,17 @@ namespace NC
             activeDefault.takeFocus();
         }
         public override void keyPress(ConsoleKey key)
-        {
-            int ind;
+        {            
             switch (key)
             {
                 case ConsoleKey.F10:
-                   return;
-                case ConsoleKey.F2:
-                    ind = findMainMenu();
-                    if (ind > -1)
-                    {
-                        controls[activeIndex].loseFocus();
-                        activeIndex = ind;
-                        controls[activeIndex].takeFocus();
-                    }
-                    break;
+                   return;                
                 default:
                     controls[activeIndex].keyPress(key);
                     break;
             }
         }
-        //protected override int getDisplayHeight()
-        //{
-        //    if (controls.Count == 0)
-        //        return Height;
-        //    else
-        //    {
-        //        int h = Height;
-        //        foreach(ControlNC item in controls)
-        //        {
-        //            h -= item.Height;
-        //        }
-        //        return h;
-        //    }
-        //}
+       
         public void addControl(ControlNC control, bool isActive=false)
         {
            //TODO:как распределить высоты?
@@ -70,28 +47,7 @@ namespace NC
             controls.Add(control);
            
            
-        }
-        private int findMainMenu()
-        {
-            int ind = 0;
-            foreach(ControlNC item in controls)
-            {
-                if (item is MainMenu) return ind;
-                ind++;
-            }
-            return -1;
-        }
-        //private int getIndexActiveDefault()
-        //{
-        //    int ind=0;
-        //    foreach (ControlNC item in controls)
-        //    {
-        //        if (item ==activeDefault) return ind;
-        //        ind++;
-        //    }
-        //    return -1;
-
-        //}
+        }        
         
         public int getCountControl()
         {
@@ -112,7 +68,8 @@ namespace NC
             {
                 item.Update();
             }
-            show();
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Clear();            
         }
 
     }

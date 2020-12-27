@@ -6,22 +6,22 @@ using System.Threading.Tasks;
 
 namespace NC
 {
-    public enum DialogWindowsType { INFO,DIALOG}
+    public enum DialogWindowsType { INFO,DIALOG, MENU}
     public class DialogWindows:IDisposable
     {
-        // String[] ButtonName;
-        // FormNC DialogForm;
         Panel messagePanel;
         DialogWindowsType WindowType;
+        string[] WindowMenu;
         public string ResultText { get; set; } = "";
         public bool Result { get; set; } = false;
         int Left;
         int Top;
         int Width;
         int Height;
-        public DialogWindows(String caption_, String message, DialogWindowsType windowsType)
+        public DialogWindows(String caption_, DialogWindowsType windowsType, String message = null, string [] menu = null)
         {
             WindowType = windowsType;
+            WindowMenu = menu;
             if (windowsType == DialogWindowsType.INFO && message != null && message.Length > 0)
                 setSizeInfoWindows(message);
             else setSizeDialogWindows();
@@ -37,32 +37,50 @@ namespace NC
         public void show()
         {
             messagePanel.show();
-            if (WindowType == DialogWindowsType.DIALOG)
-                ResultText = messagePanel.getContentText();
-            ConsoleKey key;
-            do
-            {               
-                key = Console.ReadKey().Key;
-                switch (key)
+            if (WindowType != DialogWindowsType.MENU)
+            {
+                if (WindowType == DialogWindowsType.DIALOG)
+                    ResultText = messagePanel.getContentText();
+                ConsoleKey key;
+                do
                 {
-                    case ConsoleKey.Enter:
-                        Result = true; 
-                        break;
-                    case ConsoleKey.Escape:
-                        Result = false;
-                        break;
-                    default:break;
-                }                
+                    key = Console.ReadKey().Key;
+                    switch (key)
+                    {
+                        case ConsoleKey.Enter:
+                            Result = true;
+                            break;
+                        case ConsoleKey.Escape:
+                            Result = false;
+                            break;
+                        default: break;
+                    }
+                }
+                while (key != ConsoleKey.Enter && key != ConsoleKey.Escape);
             }
-            while (key != ConsoleKey.Enter && key != ConsoleKey.Escape);
+            else showMenu();
+
+            
+        }
+        private void showMenu()
+        {
+            int weidthItem = 8 * WindowMenu.Length <= Width ? 8 : Width / WindowMenu.Length;
+            int x = messagePanel.beginCursorPosX + (Width - weidthItem * WindowMenu.Length) / 2 - 1;
+            Console.SetCursorPosition(x, messagePanel.beginCursorPosY);
+           
+            int rez = Menu.GorizontallMenu(WindowMenu, weidthItem);
+            if (rez > 0)
+                ResultText = WindowMenu[rez];
+            else ResultText = "";
         }
         private void setSizeDialogWindows()
         {
             this.Width = Console.WindowWidth / 3;
             this.Left = this.Width;
-            this.Height = 6;
+            this.Height = 8;
             this.Top = Console.WindowHeight / 2 - 3;
         }
+              
 
         private void setSizeInfoWindows(string message)
         {
@@ -71,14 +89,14 @@ namespace NC
             {
                 this.Left = (Console.WindowWidth - len) / 2 + 2;
                 this.Width = len + 2;
-                this.Height = Console.WindowHeight > 7 ? 7 : Console.WindowHeight;
+                this.Height = Console.WindowHeight > 9 ? 9 : Console.WindowHeight;
 
             }
             else
             {
                 this.Left = 0;
                 this.Width = Console.WindowWidth;
-                this.Height = Console.WindowHeight > 7 + len / this.Width ? 7 + len / this.Width : Console.WindowHeight;
+                this.Height = Console.WindowHeight > 9 + len / this.Width ? 9 + len / this.Width : Console.WindowHeight;
 
             }
             if (this.Height < Console.WindowHeight)

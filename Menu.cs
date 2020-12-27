@@ -75,20 +75,21 @@ namespace NC
             }
         }
 
-        public static int GorizontallMenu(string[] elements, int widthItem)
+        public static int GorizontallMenu(string[] elements, int widthItem, bool isActive = true)
         {
             ConsoleColor bg = Console.BackgroundColor;
             ConsoleColor fg = Console.ForegroundColor;
             int x = Console.CursorLeft;
             int y = Console.CursorTop;
             Console.CursorVisible = false;
-            int pos = 0; int dx = 0;
+            int pos = 0; int dx ;
             while (true)
             {
+                dx = 0;
                 for (int i = 0; i < elements.Length; i++)
                 {
                     Console.SetCursorPosition(x +dx, y);
-                    if (i == pos)
+                    if (i == pos || !isActive)
                     {
                         Console.BackgroundColor = fg;
                         Console.ForegroundColor = bg;
@@ -99,30 +100,36 @@ namespace NC
                         Console.ForegroundColor = fg;
                     }
                     Console.Write(elements[i].PadRight(widthItem));
+                    dx += widthItem;
                 }
 
-                ConsoleKey consoleKey = Console.ReadKey().Key;
-                switch (consoleKey)
+                if (isActive)
                 {
+                    ConsoleKey consoleKey = Console.ReadKey().Key;
+                    switch (consoleKey)
+                    {
 
-                    case ConsoleKey.Enter:
+                        case ConsoleKey.Enter:
 
-                        //Console.CursorVisible = true;
-                        return pos;                    
+                            //Console.CursorVisible = true;
+                            return pos;
 
-                    case ConsoleKey.LeftArrow:
-                        if (pos > 0)
-                            pos--;
-                        break;
+                        case ConsoleKey.LeftArrow:
+                            if (pos > 0)
+                                pos--;
+                            break;
 
-                    case ConsoleKey.RightArrow:
-                        if (pos < elements.Length - 1)
-                            pos++;
-                        break;
+                        case ConsoleKey.RightArrow:
+                            if (pos < elements.Length - 1)
+                                pos++;
+                            break;
 
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
                 }
+                
+                else return -1;              
 
 
             }
