@@ -241,14 +241,14 @@ namespace NC
 
         private void viewFile()
         {
-            string fileText = Explorer.openFile(Sourse[IndSelect].FullName);
+           
             Console.Clear();
-            Console.BackgroundColor = ConsoleColor.DarkBlue;
-            Console.ForegroundColor = ConsoleColor.Black;
+            //Console.BackgroundColor = ConsoleColor.DarkBlue;
+            //Console.ForegroundColor = ConsoleColor.Black;
             Console.SetCursorPosition(0, 0);
             Console.CursorVisible = false;
-            Console.WriteLine(fileText);
-
+            Explorer.ReadFile(Sourse[IndSelect].FullName);
+            Console.WindowWidth--;
 
         }
 

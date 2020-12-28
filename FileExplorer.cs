@@ -107,13 +107,36 @@ namespace NC
             else throw new ApplicationException($"Файл с указанным именем уже существует");
         }
         
-        public string openFile(string filePath)
+        public void ReadFile(string filePath)
         {
+            Console.WriteLine("\nДля управления просмотром используйте: PageDown - следующая страница текста; Alt-X - закрыть файл\n\nДля продоления нажмите любую клавишу...");
+            Console.ReadKey(true);
+            Console.Clear();            
             FileInfo fInfo = new FileInfo(filePath);
-            using (StreamReader sr = fInfo.OpenText())
-            {
-               string fileText = sr.ReadToEnd();
-               return fileText;
+            int cnt = 0;
+            using (StreamReader sr = new StreamReader(filePath, Encoding.Unicode))//fInfo.OpenText())            {
+            { 
+                while (true)
+                {
+                    int h = Console.WindowHeight;
+                    string line;
+                    while ((line = sr.ReadLine()) != null && cnt<h-1)
+                    {
+                        Console.WriteLine(line);
+                        cnt++;
+                    }
+                    
+                    ConsoleKeyInfo cki = Console.ReadKey(true);
+                    if (cki.Key == ConsoleKey.PageDown)  cnt = 0;                      
+                   
+                    if (cki.Key == ConsoleKey.DownArrow) cnt--;
+                                     
+                    if ((cki.Modifiers & ConsoleModifiers.Alt) == ConsoleModifiers.Alt && cki.Key == ConsoleKey.X) return;                   
+
+                }
+                
+               // string fileText = sr.ReadToEnd();
+               //return fileText;
 
             }
         }

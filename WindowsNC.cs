@@ -23,8 +23,8 @@ namespace NC
         };
         public WindowsNC()
         {
-            mainForm = new FormNC();
-            ContainerNC c = new ContainerNC(mainForm.Height - 5, mainForm.Width, mainForm.Top, mainForm.Left,Exis.Vertical, 0.5);
+            mainForm = new FormNC(Console.WindowHeight-3,Console.WindowWidth, Console.CursorTop,Console.CursorLeft);
+            ContainerNC c = new ContainerNC(mainForm.Height, mainForm.Width, mainForm.Top, mainForm.Left,Exis.Vertical, 0.5);
             c.addControl (new FileListBox(), new FileListBox());
             mainForm.addControl(c, true);          
             mainForm.activeDefault=c;
@@ -38,7 +38,7 @@ namespace NC
             ConsoleKey consoleKey;
             do 
             {
-                if (mainForm.Width != Console.WindowWidth || mainForm.Height != Console.WindowHeight) 
+                if (mainForm.Width != Console.WindowWidth || mainForm.Height != Console.WindowHeight-3) 
                 { 
                     mainForm.Update();
                     mainForm.show();
@@ -58,6 +58,7 @@ namespace NC
                         dw.show();
                     }
                     mainForm.Update();
+                    mainForm.show();
                 }
             } 
             while (consoleKey != ConsoleKey.F10);
