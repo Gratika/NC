@@ -8,19 +8,52 @@ namespace NC
 {
     public class Panel : ControlNC
     {
+        /// <summary>
+        /// цвет основы (фона)
+        /// </summary>
         public ConsoleColor baseColor { get; set; } = ConsoleColor.DarkBlue;
+        /// <summary>
+        /// цвет границ активного элемента
+        /// </summary>
         public ConsoleColor activeColor { get; set; } = ConsoleColor.White;
+        /// <summary>
+        /// цвет текста
+        /// </summary>
         public ConsoleColor textColor { get; set; } = ConsoleColor.Black;
+        /// <summary>
+        /// цвет границ неактивного элемента
+        /// </summary>
         public ConsoleColor inactiveColor { get; set; } = ConsoleColor.Gray;
+        /// <summary>
+        /// цвет выбраного элемента
+        /// </summary>
         public ConsoleColor selectedColor { get; set; } = ConsoleColor.Cyan;
 
+        /// <summary>
+        /// позиция Х курсора 
+        /// </summary>
         public int cursorPosX { get; set; }
+        /// <summary>
+        ///  позиция У курсора 
+        /// </summary>
         public int cursorPosY { get; set; }
+        /// <summary>
+        /// видим курсор или нет
+        /// </summary>
         public bool cursorVisible { get; set; }
+        /// <summary>
+        /// свойство определяет, имеет ли элемент рамку
+        /// </summary>
         public bool hasBorder { get; set; } = true;
 
-        public string caption { get; set; }
-        public string textContent { get; set; }
+       /// <summary>
+       /// заголовок панели
+       /// </summary>
+       public string caption { get; set; }
+       /// <summary>
+       /// текст, который отображается на панели
+       /// </summary>
+       public string textContent { get; set; }
 
 
         public Panel(int height_, int width_, int top_, int left_, string caption_, string content_, bool cursorVisible_)
@@ -40,6 +73,9 @@ namespace NC
         public Panel(string caption_, string content_, bool cursorVisible_) : this(Console.WindowHeight, Console.WindowWidth, 0, 0, caption_, content_, cursorVisible_) { }
         public Panel() : this(Console.WindowHeight, Console.WindowWidth, 0, 0, "", "", false) { }
 
+        /// <summary>
+        /// виводит заголовок панели
+        /// </summary>
         public void printCaption()
         {
             if (caption != null)
@@ -66,6 +102,9 @@ namespace NC
             cursorPosX = beginCursorPosX;
             cursorPosY = beginCursorPosY;
         }
+        /// <summary>
+        /// печатает фон панели
+        /// </summary>
         public void drawBackGround()
         {
             int x = Left, y = Top;
@@ -78,7 +117,13 @@ namespace NC
                 y++;
             }
         }
-        public virtual void drawText(string text, int maxWeidth/*, bool wordWrap*/)
+       /// <summary>
+       /// печатает один рядок текста на панели
+       /// если длина рядка больше отведенной под него ширины, то он обрезается
+       /// </summary>
+       /// <param name="text">рядок текста, который необходимо отобразить</param>
+       /// <param name="maxWeidth">ширина, доступная для печати</param>
+        public virtual void drawText(string text, int maxWeidth)
         {
             Console.ForegroundColor = textColor;
             Console.SetCursorPosition(cursorPosX, cursorPosY);
@@ -93,6 +138,10 @@ namespace NC
 
         }
 
+        /// <summary>
+        /// отображение панели на экране;
+        /// печатается основа, границы, заголовок и контент(отображаемый на панели текст)
+        /// </summary>
         public override void show()
         {
             drawBackGround();
@@ -110,20 +159,40 @@ namespace NC
 
 
         
+        /// <summary>
+        /// возвращает доступную для печати Высоту панели
+        /// </summary>
+        /// <returns></returns>
         protected override int getDisplayHeight()
         {
             return Height - 2;
         }
+        /// <summary>
+        /// возвращает доступную для печати Ширину панели
+        /// </summary>
+        /// <returns></returns>
         protected override int getDisplayWidth()
         {
             return Width - 2;
         }
 
+        /// <summary>
+        /// реакция на нажатие клавиш
+        /// нет специальных клавиш управления
+        /// </summary>
+        /// <param name="key"></param>
         public override void keyPress(ConsoleKey key)
         {
             return;
         }
-        
+
+        /// <summary>
+        /// ввод текста пользователем
+        /// Максимальная длина строки, которую может ввести пользователь не можен привышать 200 символов;
+        /// также на длину строки влияет значение Width и Height панели
+        /// Ввод текста заканчивается, если пользователь нажал клавишу Enter, или же длина введенного текста превышает максимально допустимую
+        /// </summary>
+        /// <returns>строка текста, которую ввел пользователь</returns>
         public string getContentText()
         {
             Console.CursorVisible = true;
@@ -138,39 +207,71 @@ namespace NC
             while (loop)
             {
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-                switch (keyInfo.Key)
+                if ((keyInfo.Modifiers & ConsoleModifiers.Alt) == ConsoleModifiers.Alt)
+                    continue;
+                if ((keyInfo.Modifiers & ConsoleModifiers.Control) == ConsoleModifiers.Control)
+                    continue;                
+                if (keyInfo.KeyChar == '\u0000') continue;               
+                if (keyInfo.Key == ConsoleKey.Tab) continue;
+                if (keyInfo.Key == ConsoleKey.Backspace)
                 {
-                    case ConsoleKey.Enter:
+                    if(sb.Length > 0)
+                    {
+                        show();
+                        int oldLen = sb.Length;
+                        sb.Remove(oldLen - 1, 1);
+                        h = getDisplayHeight() - 3;
+                        y = beginCursorPosY;
+                        Console.SetCursorPosition(x, y);
+                        maxlen = sb.Length%w;
+                        for(int i=0; i<sb.Length; i++)
                         {
-                            loop = false;
-                            break;
-                        }
-                    default:
-                        {
-                            if (sb.Length < 200)
+                            if(i>0 && i % w == 0)
                             {
-                                sb.Append(keyInfo.KeyChar);
-                                Console.Write(keyInfo.KeyChar);
-                                maxlen++;
-                                if (maxlen > w - 1)
-                                {
-                                    maxlen = 0;
-                                    y++;
-                                    Console.SetCursorPosition(x, y);
-                                    h--;
-                                    if (h == 0) loop = false;
-                                }
-
+                                y++;
+                                Console.SetCursorPosition(x, y);
                             }
-                            break;
+                            Console.Write(sb[i]);
                         }
+                    }
+                    continue;
                 }
+
+                if (keyInfo.Key == ConsoleKey.Enter) 
+                { 
+                    loop = false;
+                    continue;
+                }
+
+                if (sb.Length < 200)
+                {
+                    sb.Append(keyInfo.KeyChar);
+                    Console.Write(keyInfo.KeyChar);
+                    maxlen++;
+                    if (maxlen > w - 1)
+                    {
+                        maxlen = 0;
+                        y++;
+                        Console.SetCursorPosition(x, y);
+                        h--;
+                        if (h == 0) loop = false;
+                    }
+                }
+                else loop = false;
+                           
+                
             }
 
             Console.CursorVisible = false;
             return sb.ToString();
         }
 
+
+        /// <summary>
+        /// печать контента на форме
+        /// если длина текста превышает ширину панели, он разбивается на строки;
+        /// количество строк текста не может превышать высоту панели 
+        /// </summary>
         private void drawContent()
         {
 
@@ -181,14 +282,22 @@ namespace NC
             int bgnPos = 0;
             while (bgnPos < words.Length && cursorPosY < Top+getDisplayHeight() - 1)
             {
-                int maxLen = 0;
-                string str = splitTextForPrint(ref bgnPos, ref words, ref maxLen, maxWeidth);
+                //int maxLen = 0;
+                string str = splitTextForPrint(ref bgnPos, ref words,/* ref maxLen,*/ maxWeidth);
                 drawText(str, maxWeidth);
                 cursorPosY++;
             }
         }
-        private string splitTextForPrint(ref int bgnPos, ref string[] words, ref int maxlen, int maxWeidth)
+        /// <summary>
+        /// формирует из слов отдельные строки
+        /// </summary>
+        /// <param name="bgnPos">начальная позиция в массиве слов</param>
+        /// <param name="words">массив слов</param>       
+        /// <param name="maxWeidth">максимально допустимая длина строки</param>
+        /// <returns>сформированная строка текста</returns>
+        private string splitTextForPrint(ref int bgnPos, ref string[] words,/* ref int maxlen,*/ int maxWeidth)
         {
+            int maxlen = 0;
             StringBuilder str = new StringBuilder();
             do
             {

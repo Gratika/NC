@@ -6,17 +6,26 @@ using System.Threading.Tasks;
 
 namespace NC
 {
+    /// <summary>
+    /// главное окно программы
+    /// </summary>
     class WindowsNC
     {
+        /// <summary>
+        /// основной элемент окна - форма
+        /// </summary>
         FormNC mainForm;
+        /// <summary>
+        /// список функциональных клавиш программы
+        /// </summary>
         string[] userMenu = new string[]
         {
             "F2-Rename",
-            "F3-View",
-            "F4-Edit",
+            "F3-Open",
+            "F4-newFile",
             "F5-Copy",
             "F6-Cut",
-            "F7-New",
+            "F7-NewDir",
             "F8-Delete",
             "F9-Drivers",
             "F10-Exit"
@@ -29,6 +38,7 @@ namespace NC
             mainForm.addControl(c, true);          
             mainForm.activeDefault=c;
         }
+        //отображение окна на экране
         public void show()
         {
             mainForm.show();
@@ -39,12 +49,8 @@ namespace NC
             do 
             {
                 if (mainForm.Width != Console.WindowWidth || mainForm.Height != Console.WindowHeight-3) 
-                { 
-                    mainForm.Update();
-                    mainForm.show();
-                    wItem = Console.WindowWidth / userMenu.Length;
-                    Console.SetCursorPosition(0, Console.WindowHeight - 2);
-                    Menu.GorizontallMenu(userMenu, wItem, false);
+                {
+                    update(); 
                 }               
                 consoleKey = Console.ReadKey().Key;
                 try
@@ -57,12 +63,23 @@ namespace NC
                     { 
                         dw.show();
                     }
-                    mainForm.Update();
-                    mainForm.show();
+                    update();
                 }
             } 
             while (consoleKey != ConsoleKey.F10);
             
+        }
+       
+       /// <summary>
+       /// обновление размеров окна и отображение на экране
+       /// </summary>
+       public void update()
+        {
+            mainForm.Update();
+            mainForm.show();
+            int wItem = Console.WindowWidth / userMenu.Length;
+            Console.SetCursorPosition(0, Console.WindowHeight - 2);
+            Menu.GorizontallMenu(userMenu, wItem, false);
         }
     }
 }

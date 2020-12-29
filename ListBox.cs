@@ -7,14 +7,29 @@ using System.Threading.Tasks;
 
 namespace NC
 {
+    /// <summary>
+    /// класс, наследуемый от панели и умеющий работать со списком файлов и директорий
+    /// </summary>
     class FileListBox:Panel
     {
+        /// <summary>
+        /// список файлов и директорий
+        /// </summary>
         public List<ResourseInfo> Sourse;      
+        /// <summary>
+        /// индекс первого видимого на экране элемента списка
+        /// </summary>
         public int IndFirstVisible { get; set; }
-       
-        public int IndSelect { get; set; }
-       
+
+        /// <summary>
+        /// индекс выделеного элемента списка
+        /// </summary>
+        public int IndSelect { get; set; }       
+        
         public FileExplorer Explorer;
+        /// <summary>
+        /// путь к каталогу, содержимое которого отображается
+        /// </summary>
         public string soursePath = "C:\\";       
         public FileListBox(int height_, int width_, int top_, int left_, bool cursorVisible_):base(height_,width_,top_,left_, "C:\\", "", cursorVisible_)
         {
@@ -24,6 +39,10 @@ namespace NC
 
         public FileListBox(int height_, int width_, int top_, int left_) : this(height_, width_, top_, left_, false){}
         public FileListBox():this(Console.WindowHeight, Console.WindowWidth, 0, 0, false) { }
+        /// <summary>
+        /// отображение элемента списка
+        /// </summary>
+        /// <param name="i">индекс элемента, который отображается</param>
         public void drawItem(int i)
         {
             if (IndSelect == i && isActive) 
@@ -34,6 +53,11 @@ namespace NC
             cursorPosX = beginCursorPosX;
             cursorPosY++;
         }
+        /// <summary>
+        /// отображение "страницы" элементов из списка
+        /// </summary>
+        /// <param name="indBgn">индекс первого отображаемого на странице элемента списка</param>
+        /// <param name="indEnd">индекс последнего отображаемого на странице элемента списка</param>
         public void drawPage (int indBgn, int indEnd)
         {
             for(int i=indBgn; i<indEnd && i<Sourse.Count; i++)
@@ -44,6 +68,9 @@ namespace NC
 
         }
 
+        /// <summary>
+        /// выделить следующий элемент списка
+        /// </summary>
         public void getNextItem()
         {
             IndSelect++;
@@ -58,6 +85,9 @@ namespace NC
 
         }
 
+        /// <summary>
+        /// выделить предыдущий элемент списка
+        /// </summary>
         public void getPrevItem()
         {
             IndSelect--;
@@ -73,11 +103,18 @@ namespace NC
             drawPage(IndFirstVisible, IndFirstVisible + getDisplayHeight());
 
         }
+        /// <summary>
+        /// отображение на экране
+        /// </summary>
         public override void show()
         {
             base.show();
             drawPage(IndFirstVisible, IndFirstVisible + getDisplayHeight());
         }
+        /// <summary>
+        /// реакция на нажатие клавиш
+        /// </summary>
+        /// <param name="key">нажатая клавиша</param>
         public override void keyPress(ConsoleKey key)
         {
             switch (key)
@@ -88,8 +125,8 @@ namespace NC
                 case ConsoleKey.DownArrow:
                     getNextItem();
                     break;
-                case ConsoleKey.Enter: //if directory then open
-                    openDirectory();                    
+                case ConsoleKey.Enter: // open resourse
+                    openResourse();                    
                     break;
                 case ConsoleKey.Escape:                   
                     soursePath = getParentPath(soursePath);
@@ -97,12 +134,13 @@ namespace NC
                     show();
                     break;
                 case ConsoleKey.F2://rename
-                    
+                    rename();
                     break;
-                case ConsoleKey.F3: //View file
-                    viewFile();
+                case ConsoleKey.F3: //open file
+                    openResourse();
                     break;
-                case ConsoleKey.F4://Edit TextFile
+                case ConsoleKey.F4://create TextFile
+                    createFile();
                     break;
                 case ConsoleKey.F5://copy
                     copyResourse();
@@ -124,20 +162,38 @@ namespace NC
             }
         }
 
+        /// <summary>
+        /// открыть файл или директорию
+        /// </summary>
+        private void openResourse()
+        {
+           
+            if (Directory.Exists(Sourse[IndSelect].FullName))
+            {
+                soursePath = Sourse[IndSelect].FullName;
+                openDirectory();
+            }
+            else  
+            if (File.Exists(Sourse[IndSelect].FullName))
+               openFile() ;
+
+
+        }
+        /// <summary>
+        /// открыть директорию
+        /// </summary>
         private void openDirectory()
         {
             try
             {
-                soursePath = Sourse[IndSelect].FullName;
-                if (Directory.Exists(soursePath))
-                {
-                    getNewSourse();
-                    show();
-                }
+                getNewSourse();
+                show();
+               
             }
             catch
             {
                 soursePath = getParentPath(soursePath);
+                caption = soursePath;
                 Sourse.Clear();
                 Sourse = Explorer.GetResourseEntries(soursePath).ToList<ResourseInfo>();
                 IndFirstVisible = 0;
@@ -146,6 +202,11 @@ namespace NC
             }
         }
 
+        /// <summary>
+        /// получить путь к родительскому каталогу
+        /// </summary>
+        /// <param name="path">путь к каталогу, для которого необходимо получить родительский</param>
+        /// <returns>путь к родительскому каталогу</returns>
         private string getParentPath(string path)
         {
             string result;
@@ -154,6 +215,9 @@ namespace NC
             else result = Directory.GetDirectoryRoot(path);
             return result;
         }
+        /// <summary>
+        /// обновить список файлов и директорий
+        /// </summary>
         public void getNewSourse()
         {
             caption = soursePath;
@@ -163,7 +227,10 @@ namespace NC
             IndSelect = 0;           
             
         }
-        private void copyResourse()
+       /// <summary>
+       /// скопировать файл или директорию
+       /// </summary>
+       private void copyResourse()
         {
             FileListBox target = parent.getInactiveControl() as FileListBox;
             if (target != null && target.soursePath != null && target.soursePath.Length > 0)
@@ -171,58 +238,84 @@ namespace NC
                 using (DialogWindows dw = new DialogWindows("Подтвердите действие", DialogWindowsType.INFO, $"Выполнить копирование {Sourse[IndSelect].Name} в директорию {target.soursePath}? (Enter-OK, Esc-отмена)"))
                 {
                     dw.show();
-                    if (dw.Result)
-                        Explorer.Copy(Sourse[IndSelect].FullName, target.soursePath);
-                    getNewSourse();
-                    target.getNewSourse();
                     parent.show();
+                    if (dw.Result)//пользователь нажал Enter 
+                    {
+                        Explorer.Copy(Sourse[IndSelect].FullName, target.soursePath);
+                        getNewSourse();
+                        target.getNewSourse();
+                        parent.show();
+                    }
+                    
                 }
             }
         }
 
+        /// <summary>
+        /// переместить файл или директорию
+        /// </summary>
         private void cutResourse()
         {
             FileListBox target = parent.getInactiveControl() as FileListBox;
             if (target != null && target.soursePath != null && target.soursePath.Length > 0)
             {
-                using (DialogWindows dw = new DialogWindows("Подтвердите действие", DialogWindowsType.INFO, $"Переместить {Sourse[IndSelect].Name} в директорию {target.soursePath}?"))
+                using (DialogWindows dw = new DialogWindows("Подтвердите действие", DialogWindowsType.INFO, $"Переместить {Sourse[IndSelect].Name} в директорию {target.soursePath}?(Enter-OK, Esc-отмена)"))
                 {
                     dw.show();
-                    if (dw.Result)
-                        Explorer.Move(Sourse[IndSelect].FullName, target.soursePath);
-                    getNewSourse();
-                    target.getNewSourse();
                     parent.show();
+                    if (dw.Result)
+                    { 
+                        Explorer.Move(Sourse[IndSelect].FullName, target.soursePath);
+                        getNewSourse();
+                        target.getNewSourse();
+                        parent.show();
+                    }
+                    
                 }
             }
         }
 
+        /// <summary>
+        /// создать директорию
+        /// </summary>
         private void createDirectory()
         {
             using (DialogWindows dw = new DialogWindows("Название директории", DialogWindowsType.DIALOG))
             {
                 dw.show();
+                parent.show();
                 if (dw.Result)
                 {
                     Explorer.CreateDirectory(soursePath, dw.ResultText);
-                    getNewSourse();
+                    getNewSourse();                   
+                    parent.show();
                 }
-                parent.show();
+               
             }
         }
 
-        private void deleteResourse()
+       /// <summary>
+       /// удалить файл или директорию
+       /// </summary>
+       private void deleteResourse()
         {
-            using (DialogWindows dw = new DialogWindows("Подтвердите действие", DialogWindowsType.INFO,$"Вы уверены, что хотите удалить {Sourse[IndSelect].Name}?"))
+            using (DialogWindows dw = new DialogWindows("Подтвердите действие", DialogWindowsType.INFO,$"Вы уверены, что хотите удалить {Sourse[IndSelect].Name}?(Enter-OK, Esc-отмена)"))
             {
                 dw.show();
-                if (dw.Result)
-                    Explorer.delete(Sourse[IndSelect].FullName);
-                getNewSourse();
                 parent.show();
+                if (dw.Result)
+                { 
+                    Explorer.delete(Sourse[IndSelect].FullName);
+                    getNewSourse();
+                    parent.show();
+                }
+                
             }
         }
 
+        /// <summary>
+        /// получить список логических дисков ПК
+        /// </summary>
         private void getDrivers()
         {
             string[] driversMenu = Explorer.GetDrivers();
@@ -239,18 +332,53 @@ namespace NC
             }
         }
 
-        private void viewFile()
-        {
-           
-            Console.Clear();
-            //Console.BackgroundColor = ConsoleColor.DarkBlue;
-            //Console.ForegroundColor = ConsoleColor.Black;
-            Console.SetCursorPosition(0, 0);
-            Console.CursorVisible = false;
-            Explorer.ReadFile(Sourse[IndSelect].FullName);
-            Console.WindowWidth--;
-
+        /// <summary>
+        /// открыть файл
+        /// </summary>
+        private void openFile()
+        { 
+            Explorer.openFile(Sourse[IndSelect].FullName);
         }
 
+        /// <summary>
+        /// создать и открыть текстовый файл
+        /// </summary>
+        private void createFile()
+        {
+            using(DialogWindows dw = new DialogWindows("Название файла", DialogWindowsType.DIALOG))
+            {
+                dw.show();
+                parent.show();
+                if (dw.Result)
+                {
+                    string fileName = dw.ResultText + ".txt";
+                    string fullFileName = Path.Combine(soursePath, fileName);
+                    Explorer.createFile(soursePath, fileName);
+                    getNewSourse();
+                    parent.show();
+                    Explorer.openFile(fullFileName);
+                }
+               
+            }
+        }
+        /// <summary>
+        /// переименовать файл или директорию
+        /// </summary>
+        private void rename()
+        {
+            using (DialogWindows dw = new DialogWindows("Новое название", DialogWindowsType.DIALOG))
+            {
+                dw.show();
+                parent.show();
+                if (dw.Result)
+                {
+                    string newName = dw.ResultText;
+                    Explorer.renameResourse(Sourse[IndSelect].FullName, newName);
+                    getNewSourse();
+                }
+                           
+            }
+            parent.show();
+        }
     }
 }

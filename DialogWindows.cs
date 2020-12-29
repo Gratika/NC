@@ -7,12 +7,32 @@ using System.Threading.Tasks;
 namespace NC
 {
     public enum DialogWindowsType { INFO,DIALOG, MENU}
+    /// <summary>
+    /// диалоговое окно. Используется для отображения информации для пользователя, получения информации от пользователя
+    /// </summary>
     public class DialogWindows:IDisposable
     {
+        /// <summary>
+        /// основной элемент окна - панель
+        /// </summary>
         Panel messagePanel;
+        /// <summary>
+        /// тип окна
+        /// </summary>
         DialogWindowsType WindowType;
+        /// <summary>
+        /// меню - для выбора одного из нескольких возможных вариантов
+        /// </summary>
         string[] WindowMenu;
+        /// <summary>
+        /// текст, введенный пользователем
+        /// </summary>
         public string ResultText { get; set; } = "";
+        /// <summary>
+        /// результат окна;
+        /// true-пользователь подтвердил действие;
+        /// false - пользователь отменил действие;
+        /// </summary>
         public bool Result { get; set; } = false;
         int Left;
         int Top;
@@ -34,17 +54,24 @@ namespace NC
             messagePanel.beginCursorPosY = Top + 2;            
 
         }
+        /// <summary>
+        /// отображение окна на экране
+        /// </summary>
         public void show()
         {
             messagePanel.show();
             if (WindowType != DialogWindowsType.MENU)
             {
                 if (WindowType == DialogWindowsType.DIALOG)
+                {
                     ResultText = messagePanel.getContentText();
+                    Console.SetCursorPosition(Left+1, Top + Height - 2);
+                    Console.Write("Enter-подтвердить, Esc-отмена");
+                }
                 ConsoleKey key;
                 do
                 {
-                    key = Console.ReadKey().Key;
+                    key = Console.ReadKey(true).Key;
                     switch (key)
                     {
                         case ConsoleKey.Enter:
@@ -62,6 +89,9 @@ namespace NC
 
             
         }
+        /// <summary>
+        /// отображение меню на панели
+        /// </summary>
         private void showMenu()
         {
             int weidthItem = 8 * WindowMenu.Length <= Width ? 8 : Width / WindowMenu.Length;

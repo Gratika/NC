@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -49,13 +50,13 @@ namespace NC
                 DirectoryInfo sourseInfo = new DirectoryInfo(soursePath);
                 if (sourseInfo.Exists) //если источник (папка, которую копируем) существует
                 {
-                    targetInfo.CreateSubdirectory(sourseInfo.Name); //создаем в папке назначения подкаталог с соответствующим именем
+                    DirectoryInfo subD = targetInfo.CreateSubdirectory(sourseInfo.Name); //создаем в папке назначения подкаталог с соответствующим именем
                     FileInfo[] files = sourseInfo.GetFiles(); //проверяем, содержатся ли в папке-источнике файли
                     if (files.Length > 0)
                     {
                         foreach (FileInfo item in files) //если да, то копируем их
                         {
-                            item.CopyTo(Path.Combine(targetInfo.FullName, item.Name), true);
+                            item.CopyTo(Path.Combine(subD.FullName, item.Name), true);
                         }
                     }
                     DirectoryInfo[] dir = sourseInfo.GetDirectories(); //проверяем, содержатся ли в папке-источнике подкаталоги
@@ -134,10 +135,6 @@ namespace NC
                     if ((cki.Modifiers & ConsoleModifiers.Alt) == ConsoleModifiers.Alt && cki.Key == ConsoleKey.X) return;                   
 
                 }
-                
-               // string fileText = sr.ReadToEnd();
-               //return fileText;
-
             }
         }
        
@@ -180,6 +177,30 @@ namespace NC
         public string[] GetDrivers()
         {
             return Directory.GetLogicalDrives();
+        }
+
+        public void openFile(string fileName)
+        {
+            Process p = Process.Start(fileName);
+        }
+
+        public void renameResourse(string soursePath, string newName)
+        {
+            string fullNewName;
+            if (File.Exists(soursePath))
+            {
+                FileInfo fi = new FileInfo(soursePath);
+                string dir = fi.DirectoryName;
+                string r = fi.Extension;
+                fullNewName = Path.Combine(dir, newName + fi.Extension);
+                fi.MoveTo(fullNewName);
+            }
+            if (Directory.Exists(soursePath))
+            {
+                DirectoryInfo di = new DirectoryInfo(soursePath);
+                fullNewName = Path.Combine(di.Parent.FullName, newName);
+                di.MoveTo(fullNewName);
+            }
         }
         
     }

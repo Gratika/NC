@@ -3,15 +3,27 @@
 namespace NC
 {
     public enum Exis { Vertical = 1, Horizontal = 2 }
+    /// <summary>
+    /// Контейнер, позволяющий отобразить два элемента
+    /// </summary>
     public class ContainerNC : ControlNC
     {
+        /// <summary>
+        /// первый элемент
+        /// </summary>
         public ControlNC First { get; set; }
+        /// <summary>
+        /// Второй элемент
+        /// </summary>
         public ControlNC Second { get; set; }
+        /// <summary>
+        /// Пложение оси, способ размещения элементов в контейнере
+        /// </summary>
         public Exis exis { get; set; } = Exis.Vertical;
         /// <summary>
-        /// соотношение контролов First и Second;
-        /// 0-всю доступную область контейнера занимает контрол First;
-        /// 1 - всю доступную область контейнера занимает контрол Second;
+        /// соотношение элементов First и Second;
+        /// 0 - всю доступную область контейнера занимает элемент First;
+        /// 1 - всю доступную область контейнера занимает элемент Second;
         /// промежуточное значение указывает на промежуточный размер ;
         /// </summary>
         public double ratio { get; set; }        
@@ -28,8 +40,8 @@ namespace NC
         /// <summary>
         /// Привязка контролов к контейнеру 
         /// </summary>
-        /// <param name="first_">первый контрол; в зависимости от положения оси занимает левую или верхнюю половину контейнера</param>
-        /// <param name="second_">второй контрол;в зависимости от положения оси занимает правую или нижнюю половину контейнера</param>
+        /// <param name="first_">первый элемент; в зависимости от положения оси занимает левую или верхнюю половину контейнера</param>
+        /// <param name="second_">второй элемент;в зависимости от положения оси занимает правую или нижнюю половину контейнера</param>
         public void addControl(ControlNC first_, ControlNC second_ = null)
         {
 
@@ -52,8 +64,8 @@ namespace NC
         }
 
         /// <summary>
-        /// Расчет размеров и положения первого контрола в контейнере;
-        /// левый верхний угол контрола совпадает с левым верхним углом контейнера;
+        /// Расчет размеров и положения первого элемент в контейнере;
+        /// левый верхний угол элемента совпадает с левым верхним углом контейнера;
         /// в зависимости от положения оси занимает левую или верхнюю половину контейнера
         /// </summary>        
         protected void rateFirst()
@@ -90,8 +102,8 @@ namespace NC
         }
 
         /// <summary>
-        /// Расчет размеров и положения второго контрола в контейнере;
-        /// положение и размер расчитывается с учетом размеров первого контрола
+        /// Расчет размеров и положения второго элемента в контейнере;
+        /// положение и размер расчитывается с учетом размеров первого элемента
         /// </summary>        
         protected void rateSecond()
         {
@@ -132,12 +144,21 @@ namespace NC
         }
        
        
+        /// <summary>
+        /// обновление размеров контейнера
+        /// Сначала контейнер получает доступную ему область для печати
+        /// потом пересчитываются размеры элементов в контейнере
+        /// </summary>
         public override void Update()
         {
             base.Update();
             if(First!=null) rateFirst();
             if(Second !=null) rateSecond();
         }
+        /// <summary>
+        /// возвращает неактивный элемент контейнера или null
+        /// </summary>
+        /// <returns></returns>
         public ControlNC getInactiveControl()
         {
             if (First != null && !First.isActive)
@@ -146,6 +167,10 @@ namespace NC
                 return Second;
             return null;
         }
+        /// <summary>
+        /// возвращает активный элемент контейнера или null
+        /// </summary>
+        /// <returns></returns>
         protected ControlNC getActiveControl()
         {
             if (First != null && First.isActive)
@@ -154,6 +179,11 @@ namespace NC
                 return Second;
             return null;
         }
+        /// <summary>
+        /// описывает поведение контейнера при получении фокуса
+        /// при получении фокуса, если контейнер непустой,
+        /// один из элементов контейнера также становится активным
+        /// </summary>
         public override void takeFocus()
         {
             isActive = true;
@@ -165,6 +195,9 @@ namespace NC
                     Second.takeFocus();
             }
         }
+        /// <summary>
+        /// описывает поведение контейнера при потери фокуса
+        /// </summary>
         public override void loseFocus()
         {
             base.loseFocus();
@@ -174,6 +207,12 @@ namespace NC
             }
 
         }
+        /// <summary>
+        /// метод описывает реакцию контейнера на нажатие клавиш.
+        /// Клавиша Tab изменяет активный элемент в контейнере;
+        /// другие клавиши передаются на обработку в активный дочерний элемент
+        /// </summary>
+        /// <param name="key">нажатая клавиша</param>
         public override void keyPress(ConsoleKey key)
         {
             switch (key)
@@ -187,6 +226,9 @@ namespace NC
                     break;
             }
         }
+        /// <summary>
+        /// Смена активного элемента в контейнере
+        /// </summary>
         private void transferFocus()
         {
             if (First != null && First.isActive)
@@ -211,7 +253,10 @@ namespace NC
 
         }
 
-        public override void show()
+       /// <summary>
+       /// отображение на экране
+       /// </summary>
+       public override void show()
         {
             First.show();
             Second.show();

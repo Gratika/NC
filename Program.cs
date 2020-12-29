@@ -22,20 +22,11 @@ namespace NC
             //int maxW = Console.LargestWindowWidth;
             //Console.SetWindowPosition(0, 0);
             //Console.SetWindowSize(maxW, maxH);
-            //MyWindow w = new MyWindow(0, 0, maxW / 2 - 1, maxH, true);
-            //w.Drow();
-            //w.showMenu();
-            //  MyWindow.Drow(maxW / 2 + 1, 0, maxW, maxH);
-            //for (int i = 1; i < 10; i++)
-            //{
-            //    for (int g = 1; g <20; g++)
-            //        Console.Write('\u2588');
-            //    Console.Write('\n');
-            //}
-            //   Console.ReadKey();
+
 
             WindowsNC NC = new WindowsNC();
             NC.show();
+           
             
 
         }
