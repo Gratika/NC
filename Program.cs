@@ -15,15 +15,12 @@ namespace NC
         static void Main(string[] args)
         {
 
-            //Console.ForegroundColor = ConsoleColor.DarkBlue;
+            
             Console.InputEncoding = Encoding.Unicode;
             Console.OutputEncoding = Encoding.Unicode;
             //int maxH = Console.LargestWindowHeight;
-            //int maxW = Console.LargestWindowWidth;
-            //Console.SetWindowPosition(0, 0);
+            //int maxW = Console.LargestWindowWidth;           
             //Console.SetWindowSize(maxW, maxH);
-
-
             WindowsNC NC = new WindowsNC();
             NC.show();
            
